@@ -42,12 +42,16 @@ data['BalanceGroup'] = pd.cut(
 
 st.sidebar.header("Filters")
 
-selected_geo = st.sidebar.selectbox(
-    "Select Geography",
-    data['Geography'].unique()
-)
+geo_options = ["All", "France", "Germany", "Spain"]
 
-filtered_data = data[data['Geography'] == selected_geo]
+selected_geo = st.sidebar.selectbox("Select Geography", geo_options)
+
+filtered_data = data.copy()
+
+if selected_geo != "All":
+    col_name = f"Geography_{selected_geo}"
+    if col_name in data.columns:
+        filtered_data = data[data[col_name] == 1].copy()
 
 # -----------------------------
 # KPI
