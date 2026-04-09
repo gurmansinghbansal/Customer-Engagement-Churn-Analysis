@@ -8,7 +8,7 @@ st.title("Customer Engagement & Churn Analysis Dashboard")
 
 # Load data
 data = pd.read_csv("European_Bank.csv")
-data.columns = data.columns.str.strip()
+
 # -----------------------------
 # Feature Engineering
 # -----------------------------
