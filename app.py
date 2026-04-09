@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 st.title("Customer Engagement & Churn Analysis Dashboard")
 
 # Load data
-data = pd.read_csv("European_Bank.csv")
+data = pd.read_csv("clean_features.csv")
 
 # -----------------------------
 # Feature Engineering
