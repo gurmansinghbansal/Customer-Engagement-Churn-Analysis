@@ -30,7 +30,13 @@ def classify(row):
 data['EngagementGroup'] = data.apply(classify, axis=1)
 
 # Balance Ratio
-data['BalanceSalaryRatio'] = data['Balance'] / (data['EstimatedSalary'] + 1)
+if 'Balance' in data.columns and 'EstimatedSalary' in data.columns:
+    filtered_data = filtered_data.copy()
+    filtered_data['BalanceSalaryRatio'] = (
+        filtered_data['Balance'] / (filtered_data['EstimatedSalary'] + 1)
+    )
+else:
+    st.warning("Balance or EstimatedSalary column missing")
 
 # Balance Group
 data['BalanceGroup'] = pd.cut(
