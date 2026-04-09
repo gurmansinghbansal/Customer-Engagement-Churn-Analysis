@@ -11,9 +11,9 @@ data = pd.read_csv("clean_features.csv")
 data.columns = data.columns.str.strip()
 
 def get_country(row):
-    if row.get('Geography_Germany', 0) == 1:
+    if 'Geography_Germany' in row and row['Geography_Germany'] == 1:
         return 'Germany'
-    elif row.get('Geography_Spain', 0) == 1:
+    elif 'Geography_Spain' in row and row['Geography_Spain'] == 1:
         return 'Spain'
     else:
         return 'France'
@@ -69,7 +69,8 @@ filtered_data = data[data['Geography'] == selected_geo]
 # -----------------------------
 
 st.subheader("Overall Churn Rate")
-churn_rate = filtered_data['Exited'].mean()
+churn_col = 'Exited' if 'Exited' in filtered_data.columns else 'target'
+churn_rate = filtered_data[churn_col].mean()
 st.metric("Churn Rate", f"{churn_rate:.2f}")
 
 # -----------------------------
