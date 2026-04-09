@@ -29,7 +29,10 @@ def classify(row):
 data['EngagementGroup'] = data.apply(lambda row: classify(row), axis=1)
 
 # Balance Ratio
-data['BalanceSalaryRatio'] = data['Balance'] / (data['EstimatedSalary'] + 1)
+balance = data.get('Balance', 0)
+salary = data.get('EstimatedSalary', 1)
+
+data['BalanceSalaryRatio'] = balance / (salary + 1)
 
 # Balance Group
 data['BalanceGroup'] = pd.cut(
