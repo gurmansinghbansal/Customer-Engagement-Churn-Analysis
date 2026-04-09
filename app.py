@@ -8,22 +8,25 @@ st.title("Customer Engagement & Churn Analysis Dashboard")
 
 # Load data
 data = pd.read_csv("clean_features.csv")
-
+data.columns = data.columns.str.strip()
 # Feature Engineering
 # -----------------------------
 
 # Engagement Group
 def classify(row):
-    if row['IsActiveMember'] == 1 and row['NumOfProducts'] > 1:
+    active = row.get('IsActiveMember', 0)
+    products = row.get('NumOfProducts', 0)
+
+    if active == 1 and products > 1:
         return "Active_Engaged"
-    elif row['IsActiveMember'] == 0 and row['NumOfProducts'] == 1:
+    elif active == 0 and products == 1:
         return "Inactive_LowProduct"
-    elif row['IsActiveMember'] == 1:
+    elif active == 1:
         return "Active_LowProduct"
     else:
         return "Inactive_HighValue"
-
-data['EngagementGroup'] = data.apply(classify, axis=1)
+        
+data['EngagementGroup'] = data.apply(lambda row: classify(row), axis=1)
 
 # Balance Ratio
 data['BalanceSalaryRatio'] = data['Balance'] / (data['EstimatedSalary'] + 1)
