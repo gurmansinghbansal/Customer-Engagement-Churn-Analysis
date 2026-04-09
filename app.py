@@ -9,6 +9,7 @@ st.title("Customer Engagement & Churn Analysis Dashboard")
 # Load data
 data = pd.read_csv("clean_features.csv")
 st.write(data.columns)
+st.stop()
 # -----------------------------
 # Feature Engineering
 # -----------------------------
