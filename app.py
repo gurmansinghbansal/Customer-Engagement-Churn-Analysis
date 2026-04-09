@@ -9,6 +9,16 @@ st.title("Customer Engagement & Churn Analysis Dashboard")
 # Load data
 data = pd.read_csv("clean_features.csv")
 data.columns = data.columns.str.strip()
+
+def get_country(row):
+    if row.get('Geography_Germany', 0) == 1:
+        return 'Germany'
+    elif row.get('Geography_Spain', 0) == 1:
+        return 'Spain'
+    else:
+        return 'France'
+
+data['Geography'] = data.apply(get_country, axis=1)
 # Feature Engineering
 # -----------------------------
 
