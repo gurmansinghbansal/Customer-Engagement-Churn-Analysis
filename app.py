@@ -15,11 +15,11 @@ data = pd.read_csv("clean_features.csv")
 
 # Engagement Group
 def classify(row):
-    if row['IsActiveMember'] == 1 and row['NumOfProducts'] > 1:
+    if row['ActiveMember'] == 1 and row['NumProducts'] > 1:
         return "Active_Engaged"
-    elif row['IsActiveMember'] == 0 and row['NumOfProducts'] == 1:
+    elif row['ActiveMember'] == 0 and row['NumProducts'] == 1:
         return "Inactive_LowProduct"
-    elif row['IsActiveMember'] == 1:
+    elif row['ActiveMember'] == 1:
         return "Active_LowProduct"
     else:
         return "Inactive_HighValue"
@@ -64,7 +64,7 @@ st.metric("Churn Rate", f"{churn_rate:.2f}")
 st.subheader("Churn by Active Membership")
 
 fig1, ax1 = plt.subplots(figsize=(8,5))
-sns.barplot(x='IsActiveMember', y='Exited', data=filtered_data, ax=ax1)
+sns.barplot(x='ActiveMember', y='Exited', data=filtered_data, ax=ax1)
 ax1.set_xlabel("Is Active Member (0 = No, 1 = Yes)")
 ax1.set_ylabel("Churn Rate")
 
@@ -77,7 +77,7 @@ st.pyplot(fig1)
 st.subheader("Churn by Number of Products")
 
 fig2, ax2 = plt.subplots(figsize=(8,5))
-sns.barplot(x='NumOfProducts', y='Exited', data=filtered_data, ax=ax2)
+sns.barplot(x='NumProducts', y='Exited', data=filtered_data, ax=ax2)
 ax2.set_xlabel("Number of Products")
 ax2.set_ylabel("Churn Rate")
 
