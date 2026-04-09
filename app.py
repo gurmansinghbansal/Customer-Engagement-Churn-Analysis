@@ -15,11 +15,14 @@ data = pd.read_csv("European_Bank.csv")
 
 # Engagement Group
 def classify(row):
-    if row['IsActiveMember'] == 1 and row['NumOfProducts'] > 1:
+    active = row.get('IsActiveMember', row.get('isactivemember', 0))
+    products = row.get('NumOfProducts', 0)
+
+    if active == 1 and products > 1:
         return "Active_Engaged"
-    elif row['IsActiveMember'] == 0 and row['NumOfProducts'] == 1:
+    elif active == 0 and products == 1:
         return "Inactive_LowProduct"
-    elif row['IsActiveMember'] == 1:
+    elif active == 1:
         return "Active_LowProduct"
     else:
         return "Inactive_HighValue"
