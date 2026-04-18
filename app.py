@@ -59,7 +59,10 @@ st.write(f"Churn Rate: {churn_rate:.2%}")
 
 # Feature Engineering
 
-if 'BalanceSalaryRatio' in filtered_data.columns:
+if 'Balance' in filtered_data.columns and 'EstimatedSalary' in filtered_data.columns:
+    filtered_data['BalanceSalaryRatio'] = (
+        filtered_data['Balance'] / (filtered_data['EstimatedSalary'] + 1)
+    )
 
     # Create groups
     filtered_data['BalanceGroup'] = pd.cut(
@@ -84,33 +87,27 @@ if 'IsActiveMember' in filtered_data.columns and 'NumOfProducts' in filtered_dat
     filtered_data['EngagementGroup'] = filtered_data.apply(classify, axis=1)
 
 # Graph 1
-st.subheader("Churn by Geography")
-fig1, ax1 = plt.subplots()
-sns.countplot(data=filtered_data, x='Geography', hue='Exited', ax=ax1)
-st.pyplot(fig1)
-
-# Graph 2
 if 'IsActiveMember' in filtered_data.columns:
     st.subheader("Churn by Active Membership")
     fig2, ax2 = plt.subplots()
     sns.barplot(x='IsActiveMember', y='Exited', data=filtered_data, ax=ax2)
     st.pyplot(fig2)
 
-# Graph 3
+# Graph 2
 if 'NumOfProducts' in filtered_data.columns:
     st.subheader("Churn by Number of Products")
     fig3, ax3 = plt.subplots()
     sns.barplot(x='NumOfProducts', y='Exited', data=filtered_data, ax=ax3)
     st.pyplot(fig3)
 
-# Graph 4
+# Graph 3
 if 'EngagementGroup' in filtered_data.columns:
     st.subheader("Churn by Engagement Group")
     fig4, ax4 = plt.subplots()
     sns.barplot(x='EngagementGroup', y='Exited', data=filtered_data, ax=ax4)
     st.pyplot(fig4)
 
-# Graph 5
+# Graph 4
 if 'BalanceGroup' in filtered_data.columns:
     st.subheader("Churn Rate by Balance-Salary Group")
 
