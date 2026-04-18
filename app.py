@@ -17,7 +17,15 @@ data = data[1:]
 data.columns = data.columns.str.strip()
 
 # Convert types safely
-data = data.apply(pd.to_numeric, errors='coerce')
+numeric_cols = [
+    'CreditScore','Age','Tenure','Balance',
+    'NumOfProducts','HasCrCard','IsActiveMember',
+    'EstimatedSalary','Exited'
+]
+
+for col in numeric_cols:
+    if col in data.columns:
+        data[col] = pd.to_numeric(data[col], errors='coerce')
 
 # Restore Geography as string
 data['Geography'] = data['Geography'].astype(str).str.strip()
@@ -50,18 +58,15 @@ churn_rate = filtered_data['Exited'].mean()
 st.write(f"Churn Rate: {churn_rate:.2%}")
 
 # Feature Engineering
-if 'Balance' in filtered_data.columns and 'EstimatedSalary' in filtered_data.columns:
-    
-    # Create ratio
-    filtered_data['BalanceSalaryRatio'] = (
-        filtered_data['Balance'] / (filtered_data['EstimatedSalary'] + 1)
+
+if 'BalanceSalaryRatio' in filtered_data.columns:
+
+    # Create groups
+    filtered_data['BalanceGroup'] = pd.cut(
+        filtered_data['BalanceSalaryRatio'],
+        bins=[-1, 1, 2, 100],
+        labels=['Low', 'Medium', 'High']
     )
-
-    # Remove extreme outliers
-    filtered_data = filtered_data[
-        filtered_data['BalanceSalaryRatio'] < 10
-    ]
-
 def classify(row):
     active = row['IsActiveMember'] if 'IsActiveMember' in row else 0
     products = row['NumOfProducts'] if 'NumOfProducts' in row else 0
@@ -106,11 +111,18 @@ if 'EngagementGroup' in filtered_data.columns:
     st.pyplot(fig4)
 
 # Graph 5
-if 'BalanceSalaryRatio' in filtered_data.columns:
-    st.subheader("Balance to Salary Ratio Distribution")
+if 'BalanceGroup' in filtered_data.columns:
+    st.subheader("Churn Rate by Balance-Salary Group")
 
     fig, ax = plt.subplots()
-    sns.histplot(filtered_data['BalanceSalaryRatio'], bins=30, kde=True, ax=ax)
-    ax.set_xlim(0, 10)
+    sns.barplot(
+        data=filtered_data,
+        x='BalanceGroup',
+        y='Exited',
+        ax=ax
+    )
+
+    ax.set_ylabel("Churn Rate")
+    ax.set_xlabel("Balance-Salary Group")
 
     st.pyplot(fig)
