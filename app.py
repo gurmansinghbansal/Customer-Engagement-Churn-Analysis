@@ -19,9 +19,8 @@ data.columns = data.columns.str.strip()
 data = data.apply(pd.to_numeric, errors='coerce')
 
 data.reset_index(drop=True, inplace=True)
-st.write(data.columns)
 
-# Check required columns
+
 required_cols = ['Geography', 'Exited']
 for col in required_cols:
     if col not in data.columns:
