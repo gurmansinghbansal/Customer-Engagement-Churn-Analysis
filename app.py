@@ -23,10 +23,7 @@ if selected_geo != "All":
 st.subheader(f"Data for: {selected_geo}")
 
 # Detect churn column
-churn_col = None
-for col in data.columns:
-    if col.lower() in ['exited', 'churn']:
-        churn_col = col
+churn_col = 'Exited'
 
 # ----------------------------
 # FEATURE ENGINEERING
