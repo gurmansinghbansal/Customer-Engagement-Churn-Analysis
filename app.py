@@ -10,6 +10,7 @@ st.title("Customer Engagement & Churn Analysis Dashboard")
 # Load data
 data = pd.read_csv("European_Bank.csv", sep=",", engine="python")
 data.columns = data.columns.str.strip()
+st.write(data.columns)
 
 # Check required columns
 required_cols = ['Geography', 'Exited']
