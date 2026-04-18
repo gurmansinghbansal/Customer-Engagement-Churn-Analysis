@@ -1,40 +1,50 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+st.set_page_config(page_title="Churn Dashboard", layout="wide")
 
 st.title("Customer Engagement & Churn Analysis Dashboard")
 
 # Load data
-data = pd.read_csv("European_Bank.csv", sep=",")
+data = pd.read_csv("European_Bank.csv", encoding="utf-8")
 data.columns = data.columns.str.strip()
 
-st.write(data.columns)
+# Check required columns
+required_cols = ['Geography', 'Exited']
+for col in required_cols:
+    if col not in data.columns:
+        st.error(f"Column '{col}' not found in dataset")
+        st.stop()
 
 # Sidebar filter
 st.sidebar.header("Filters")
 
-geo_options = ["All", "France", "Germany", "Spain"]
+geo_options = ["All"] + sorted(data['Geography'].dropna().unique().tolist())
 selected_geo = st.sidebar.selectbox("Select Geography", geo_options)
 
-filtered_data = data.copy()
-
-if selected_geo != "All":
-    col_name = f"Geography_{selected_geo}"
-    if col_name in data.columns:
-        filtered_data = data[data[col_name] == 1]
+if selected_geo == "All":
+    filtered_data = data.copy()
+else:
+    filtered_data = data[data['Geography'] == selected_geo].copy()
 
 st.subheader(f"Data for: {selected_geo}")
 
-# Detect churn column
-churn_col = 'Exited'
+# KPI
+st.subheader("Overall Churn Rate")
+churn_rate = filtered_data['Exited'].mean()
+st.write(f"Churn Rate: {churn_rate:.2%}")
 
-# ----------------------------
-# FEATURE ENGINEERING
-# ----------------------------
+# Feature Engineering
+if 'Balance' in filtered_data.columns and 'EstimatedSalary' in filtered_data.columns:
+    filtered_data['BalanceSalaryRatio'] = (
+        filtered_data['Balance'] / (filtered_data['EstimatedSalary'] + 1)
+    )
 
-# Engagement Group (SAFE)
 def classify(row):
-    active = row.get('IsActiveMember', 0)
-    products = row.get('NumOfProducts', 0)
+    active = row['IsActiveMember'] if 'IsActiveMember' in row else 0
+    products = row['NumOfProducts'] if 'NumOfProducts' in row else 0
 
     if active == 1 and products > 1:
         return "Active_Engaged"
@@ -45,42 +55,39 @@ def classify(row):
     else:
         return "Inactive_HighValue"
 
-filtered_data['EngagementGroup'] = filtered_data.apply(classify, axis=1)
+if 'IsActiveMember' in filtered_data.columns and 'NumOfProducts' in filtered_data.columns:
+    filtered_data['EngagementGroup'] = filtered_data.apply(classify, axis=1)
 
-# Balance Ratio (SAFE)
-if 'Balance' in filtered_data.columns and 'EstimatedSalary' in filtered_data.columns:
-    filtered_data['BalanceSalaryRatio'] = (
-        filtered_data['Balance'] / (filtered_data['EstimatedSalary'] + 1)
-    )
+# Graph 1
+st.subheader("Churn by Geography")
+fig1, ax1 = plt.subplots()
+sns.countplot(data=filtered_data, x='Geography', hue='Exited', ax=ax1)
+st.pyplot(fig1)
 
-# ----------------------------
-# KPI
-# ----------------------------
-if churn_col:
-    st.subheader("Overall Churn Rate")
-    churn_rate = filtered_data[churn_col].mean()
-    st.metric("Churn Rate", f"{churn_rate:.2%}")
+# Graph 2
+if 'IsActiveMember' in filtered_data.columns:
+    st.subheader("Churn by Active Membership")
+    fig2, ax2 = plt.subplots()
+    sns.barplot(x='IsActiveMember', y='Exited', data=filtered_data, ax=ax2)
+    st.pyplot(fig2)
 
-# ----------------------------
-# 4 GRAPHS
-# ----------------------------
-if churn_col:
+# Graph 3
+if 'NumOfProducts' in filtered_data.columns:
+    st.subheader("Churn by Number of Products")
+    fig3, ax3 = plt.subplots()
+    sns.barplot(x='NumOfProducts', y='Exited', data=filtered_data, ax=ax3)
+    st.pyplot(fig3)
 
-    # 1️⃣ Active Membership
-    if 'IsActiveMember' in filtered_data.columns:
-        st.subheader("Churn by Active Membership")
-        st.bar_chart(filtered_data.groupby('IsActiveMember')[churn_col].mean())
-
-    # 2️⃣ Number of Products
-    if 'NumOfProducts' in filtered_data.columns:
-        st.subheader("Churn by Number of Products")
-        st.bar_chart(filtered_data.groupby('NumOfProducts')[churn_col].mean())
-
-    # 3️⃣ Engagement Group
+# Graph 4
+if 'EngagementGroup' in filtered_data.columns:
     st.subheader("Churn by Engagement Group")
-    st.bar_chart(filtered_data.groupby('EngagementGroup')[churn_col].mean())
+    fig4, ax4 = plt.subplots()
+    sns.barplot(x='EngagementGroup', y='Exited', data=filtered_data, ax=ax4)
+    st.pyplot(fig4)
 
-    # 4️⃣ Balance Ratio
-    if 'BalanceSalaryRatio' in filtered_data.columns:
-        st.subheader("Balance to Salary Ratio")
-        st.line_chart(filtered_data['BalanceSalaryRatio'])
+# Graph 5
+if 'BalanceSalaryRatio' in filtered_data.columns:
+    st.subheader("Balance to Salary Ratio Distribution")
+    fig5, ax5 = plt.subplots()
+    sns.histplot(filtered_data['BalanceSalaryRatio'], bins=30, kde=True, ax=ax5)
+    st.pyplot(fig5)
