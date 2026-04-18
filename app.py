@@ -4,7 +4,7 @@ import pandas as pd
 st.title("Customer Engagement & Churn Analysis Dashboard")
 
 # Load data
-data = pd.read_csv("European_Bank.csv", sep=None, engine='python')
+data = pd.read_csv("European_Bank.csv", sep=",")
 data.columns = data.columns.str.strip()
 
 st.write(data.columns)
