@@ -7,6 +7,8 @@ st.title("Customer Engagement & Churn Analysis Dashboard")
 data = pd.read_csv("European_Bank.csv")
 data.columns = data.columns.str.strip()
 
+st.write(data.columns)
+st.stop()
 # Sidebar filter
 st.sidebar.header("Filters")
 
