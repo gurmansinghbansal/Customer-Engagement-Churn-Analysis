@@ -8,7 +8,7 @@ st.set_page_config(page_title="Churn Dashboard", layout="wide")
 st.title("Customer Engagement & Churn Analysis Dashboard")
 
 # Load data
-data = pd.read_csv("European_Bank.csv", encoding="utf-8")
+data = pd.read_csv("European_Bank.csv", sep=",", engine="python")
 data.columns = data.columns.str.strip()
 
 # Check required columns
