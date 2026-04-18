@@ -16,7 +16,7 @@ data = data[1:]
 
 data.columns = data.columns.str.strip()
 
-data = data.apply(pd.to_numeric, errors='ignore')
+data = data.apply(pd.to_numeric, errors='coerce')
 
 data.reset_index(drop=True, inplace=True)
 st.write(data.columns)
